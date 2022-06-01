@@ -1,4 +1,6 @@
 import type { GetServerSideProps, InferGetServerSidePropsType, NextPage } from 'next'
+import Chart from 'chart.js/auto';
+import { Doughnut } from "react-chartjs-2"
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 
@@ -15,7 +17,7 @@ type Data = {
 export const getServerSideProps: GetServerSideProps = async ({resolvedUrl}) => {
   const url = `${process.env.URL}${resolvedUrl}`;
   const headers = new Headers();
-  headers.set("PRIVATE-TOKEN", process.env.TOKEN)
+  headers.set("PRIVATE-TOKEN", process.env.TOKEN || "")
   const data: Data = await (await (await fetch(url, { headers: headers }))).json();
   console.log(data);
   return {
@@ -26,7 +28,25 @@ export const getServerSideProps: GetServerSideProps = async ({resolvedUrl}) => {
 }
 
 const Home: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = ( { data } ) => {
+  Chart;
   const { all, closed, opened } = data.statistics.counts;
+  const chart = {
+    labels: [
+      `Abertas`,
+      'Fechadas'
+    ],
+    datasets: [{
+      data: [opened, closed],
+      backgroundColor: [
+        '#FF6384',
+        '#36A2EB',
+      ],
+      hoverBackgroundColor: [
+        '#FE6283',
+        '#35A1EA',
+      ]
+    }]
+  };
   return (
     <div className={styles.container}>
       <Head>
@@ -35,9 +55,14 @@ const Home: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = (
       </Head>
 
       <main className={styles.main}>
-        <h1> Todas: {all}</h1>
-        <h1> Abertas: {opened}</h1>
-        <h1> Fechadas: {closed}</h1>
+        <h1>Abertas: {opened} | Fechadas: {closed} | Todas: {all}</h1>
+        <div style={{ height: 500, width: 500 }}>
+          <Doughnut
+            data={chart}
+            width={400}
+            height={400}
+          />
+        </div>
       </main>
 
     </div>
