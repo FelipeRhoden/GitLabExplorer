@@ -14,7 +14,7 @@ type Data = {
 	}
 }
 
-export const getServerSideProps: GetServerSideProps = async ({resolvedUrl}) => {
+export const getServerSideProps: GetServerSideProps<{ data: Data }> = async ({resolvedUrl}) => {
   const url = `${process.env.URL}${resolvedUrl}`;
   const headers = new Headers();
   headers.set("PRIVATE-TOKEN", process.env.TOKEN || "")
